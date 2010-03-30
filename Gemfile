@@ -40,7 +40,7 @@ gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
 # gem "mysql"
 
 # Integritray provides an xml feed similar to cruisecontrol.rb
-# gem "integritray", :git => "git://github.com/spanner/integritray.git"
+gem "integritray", :git => "git://github.com/jfrench/integritray.git"
 
 # = Development dependencies.
 group :test do

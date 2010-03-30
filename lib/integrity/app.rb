@@ -143,19 +143,5 @@ module Integrity
       current_build.destroy!
       redirect url
     end
-    
-    get '/projects.xml' do
-      login_required if params["private"]
-      builder do |xml|
-        @projects = authorized? ? Project.all : Project.all(:public => true)
-        response["Content-Type"] = "application/xml; charset=utf-8"
-        xml.Projects do
-          @projects.each do |project|
-            xml.Project xml_opts_for_project(project)
-          end
-        end
-      end
-    end
-    
   end
 end

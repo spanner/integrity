@@ -5,7 +5,6 @@ require "integrity/helpers/rendering"
 require "integrity/helpers/resources"
 require "integrity/helpers/urls"
 require "integrity/helpers/push"
-require "integrity/helpers/xml"
 
 module Integrity
   module Helpers

@@ -1,8 +1,5 @@
 require "init"
-require 'integrity/integritray'
-
+run Integrity.app
 map "/cc" do
   run Integrity::Integritray::App
 end
-
-run Integrity.app

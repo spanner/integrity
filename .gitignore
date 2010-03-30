@@ -1,3 +1,4 @@
+init.rb
 log/*.log
 config/thin.yml
 config/config.yml

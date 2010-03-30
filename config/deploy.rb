@@ -19,8 +19,6 @@ after "deploy:setup" do
   sudo "mkdir -p #{shared_path}/shared" 
   sudo "chown -R #{user}:#{group} #{shared_path}"
   sudo "chown #{user}:#{group} /var/www/#{application}/releases"
-  sudo "touch #{shared_path}/config/nginx.conf"
-  sudo "ln -s #{shared_path}/config/nginx.conf /etc/nginx/sites-enabled/#{application}"
 end
 
 after 'deploy:update_code', 'bundler:install'

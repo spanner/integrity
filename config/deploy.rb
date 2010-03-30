@@ -55,23 +55,23 @@ namespace :bundler do
   end
 end
 
-namespace :delayed_job do
+namespace :jobs do
   desc "Start delayed_job worker" 
   task :start, :roles => :app do
-    run "cd #{current_path}; script/delayed_job start #{rails_env}" 
+    run "cd #{current_path}; script/job_runner start #{rails_env}" 
   end
 
   desc "Stop delayed_job worker" 
   task :stop, :roles => :app do
-    run "cd #{current_path}; script/delayed_job stop #{rails_env}" 
+    run "cd #{current_path}; script/job_runner stop #{rails_env}" 
   end
 
   desc "Restart delayed_job worker" 
   task :restart, :roles => :app do
-    run "cd #{current_path}; script/delayed_job restart #{rails_env}" 
+    run "cd #{current_path}; script/job_runner restart #{rails_env}" 
   end
 end
 
-after "deploy:start", "delayed_job:start" 
-after "deploy:stop", "delayed_job:stop" 
-after "deploy:restart", "delayed_job:restart" 
+after "deploy:start", "jobs:start" 
+after "deploy:stop", "jobs:stop" 
+after "deploy:restart", "jobs:restart" 

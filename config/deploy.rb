@@ -9,6 +9,7 @@ set :branch, 'master'
 
 role :web, "moriarty.spanner.org"
 role :app, "moriarty.spanner.org"
+set :rails_env, 'production'
 
 set :deploy_to, "/var/www/#{application}"
 set :deploy_via, :remote_cache
@@ -54,3 +55,23 @@ namespace :bundler do
   end
 end
 
+namespace :delayed_job do
+  desc "Start delayed_job worker" 
+  task :start, :roles => :app do
+    run "cd #{current_path}; script/delayed_job start #{rails_env}" 
+  end
+
+  desc "Stop delayed_job worker" 
+  task :stop, :roles => :app do
+    run "cd #{current_path}; script/delayed_job stop #{rails_env}" 
+  end
+
+  desc "Restart delayed_job worker" 
+  task :restart, :roles => :app do
+    run "cd #{current_path}; script/delayed_job restart #{rails_env}" 
+  end
+end
+
+after "deploy:start", "delayed_job:start" 
+after "deploy:stop", "delayed_job:stop" 
+after "deploy:restart", "delayed_job:restart" 

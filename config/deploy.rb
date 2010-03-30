@@ -17,22 +17,19 @@ default_run_options[:pty] = true
 after "deploy:setup" do
   sudo "mkdir -p #{deploy_to}/logs" 
   sudo "mkdir -p #{shared_path}/shared" 
-  sudo "chown -R #{user}:#{group} #{shared_path}"
-  sudo "chown #{user}:#{group} /var/www/#{application}/releases"
+  sudo "chown -R #{user}:#{group} #{deploy_to}"
 end
 
 after 'deploy:update_code', 'bundler:install'
 
 after "deploy:update" do
   run "ln -s #{shared_path}/shared #{current_release}/shared" 
+  run "ln -s #{shared_path}/data/integrity.db #{current_release}/integrity.db" 
 end
 
 namespace :deploy do
   task :start, :roles => :app do
     run "touch #{current_release}/tmp/restart.txt"
-  end
-  task :stop, :roles => :app do
-    # There is no stop.
   end
   task :restart, :roles => :app do
     run "touch #{current_release}/tmp/restart.txt"

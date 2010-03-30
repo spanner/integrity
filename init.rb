@@ -4,7 +4,6 @@ require ".bundle/environment"
 require "integrity"
 require "integrity/notifier/email"
 require "integrity/notifier/irc"
-require 'integrity/integritray'
 
 Integrity.configure do |c|
   c.database  "sqlite3:integrity.db"

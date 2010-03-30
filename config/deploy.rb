@@ -24,6 +24,7 @@ after 'deploy:update_code', 'bundler:install'
 
 after "deploy:update" do
   run "ln -s #{shared_path}/shared #{current_release}/shared" 
+  run "ln -s #{shared_path}/builds #{current_release}/builds" 
   run "ln -s #{shared_path}/data/integrity.db #{current_release}/integrity.db" 
 end
 

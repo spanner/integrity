@@ -16,22 +16,22 @@ gem "haml", "2.2.17"
 gem "thor", "0.9.9"
 gem "addressable", "2.1.1"
 gem "json", "1.1.9"
-gem "sinatra", "1.0.0"
+gem "sinatra", "0.9.4"
 gem "sinatra-authorization", "1.0.0"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
-# gem "sinatra-ditties"
+gem "sinatra-ditties"
 # = IRC
-# gem "shout-bot"
+gem "shout-bot"
 # = Campfire
 # gem "broach", :git => "git://github.com/Manfred/broach.git"
 # gem "nap", :git => "git://github.com/qrush/nap.git"
 
 # = Dependencies for the :dj builder
-# gem "activerecord"
-# gem "sqlite3-ruby"
-# gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+gem "activerecord"
+gem "sqlite3-ruby"
+gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
 # = Dependency for the :resque builder
 # gem "resque"
 
@@ -39,9 +39,13 @@ gem "sinatra-authorization", "1.0.0"
 # gem "pg"
 # gem "mysql"
 
+# Integritray provides an xml feed similar to cruisecontrol.rb
+gem "integritray", :git => "git://github.com/gvarela/integritray.git"
+
 # = Development dependencies.
 group :test do
-  gem "ruby-debug" if RUBY_VERSION < '1.9'
+  source "http://gems.github.com"
+  gem "ruby-debug"
   gem "sqlite3-ruby"
   gem "activerecord"
   gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"

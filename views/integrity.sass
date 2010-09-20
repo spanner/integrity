@@ -262,13 +262,6 @@ a
         :font-size 0.8em
         :color = !light_color
         :text-align right
-      &.success .meta
-        :color = !success_color
-      &.failed .meta
-        :color = !failed_color
-      &.building .meta
-        :color = !building_color
-
 
   #previous_builds
     li
@@ -324,14 +317,20 @@ a
       :bottom-bottom-width 1px
       :line-height 1.4
 
+    h2 a
+      :font-size smaller
+
     &.success
       h1, blockquote
         :background-color = !success_bg
         :border-color = (!success_bg - #222) (!success_bg + #111) (!success_bg + #111) (!success_bg - #222)
       h1
         :color = !success_color
-      .meta
+      .meta, .github a
         :color = !success_bg - #444
+        a:hover
+          :color = !success_bg
+          :background-color = !success_color
 
     &.failed
       h1, blockquote
@@ -339,8 +338,11 @@ a
         :border-color = (!failed_bg - #222) (!failed_bg + #111) (!failed_bg + #111) (!failed_bg - #222)
       h1
         :color = !failed_color
-      .meta
+      .meta, .github a
         :color = !failed_bg - #444
+        a:hover
+          :color = !failed_bg
+          :background-color = !failed_color
 
     &.building
       h1, blockquote
@@ -348,8 +350,11 @@ a
         :border-color = (!building_bg - #222) (!building_bg + #111) (!building_bg + #111) (!building_bg - #222)
       h1
         :color = !building_color
-      .meta
+      .meta, .github a
         :color = !building_color - #444
+        a:hover
+          :color = !building_bg
+          :background-color = !building_color
 
     h1
       :margin-top .5em
@@ -372,23 +377,6 @@ a
       :overflow auto
       :max-height 50em
       :font-size .825em
-
-      .color30
-        :color #333
-      .color31
-        :color #e33
-      .color32
-        :color #3e3
-      .color33
-        :color #ee3
-      .color34
-        :color #33e
-      .color35
-        :color #e3e
-      .color36
-        :color #3ee
-      .color37
-        :color #fff
 
   #push_path
     :display block

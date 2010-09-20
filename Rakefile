@@ -20,6 +20,7 @@ namespace :test do
   end
 end
 
+desc "Create the database"
 task :db do
   require "init"
   DataMapper.auto_upgrade!
@@ -69,6 +70,11 @@ file "doc/integrity.html" => ["doc/htmlize",
   "doc/integrity.txt",
   "doc/integrity.css"] do |f|
   sh "cat doc/integrity.txt | doc/htmlize > #{f.name}"
+end
+
+desc "Re-generate stylesheet"
+file "public/integrity.css" => "views/integrity.sass" do |f|
+  sh "sass views/integrity.sass > #{f.name}"
 end
 
 CLOBBER.include("doc/integrity.html")

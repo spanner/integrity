@@ -8,16 +8,19 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   EOS
 
   setup do
-    @builder = Integrity.builder
-    Integrity.configure { |c| c.builder :threaded }
+    @builder = Integrity.config.builder
+    Integrity.configure { |c|
+      c.builder = :threaded, 1
+    }
   end
 
   teardown do
-    Integrity.builder = @builder
+    # TODO this dude shouldn't be leaking
+    Integrity.config.instance_variable_set(:@builder, @builder)
   end
 
   def build
-    Integrity.builder.wait!
+    Integrity.config.builder.wait!
   end
 
   scenario "Triggering a successful build" do
@@ -29,7 +32,12 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    within "#build" do
+      assert_have_tag("h1",         :content => "HEAD hasn't been built yet")
+      assert_have_tag("blockquote", :content => "message not loaded")
+      assert_have_tag(".who",       :content => "author not loaded")
+      assert_have_tag(".when",      :content => "commit date not loaded")
+    end
 
     build
     reload
@@ -50,7 +58,7 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
@@ -67,16 +75,17 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
 
     click_link "my-test-project"
     click_button "Fetch and build"
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
+    reload
 
     click_link "my-test-project"
     assert_have_tag "h1", :content => "success"
@@ -92,14 +101,14 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1", :content => "HEAD hasn't been built yet")
 
     build
     reload
     assert_have_tag("h1", :content => "failed")
 
     click_link "my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
     click_button "Fetch and build"
@@ -112,49 +121,49 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
   scenario "Fixing the build command and then rebuilding the failed build" do
     repo = git_repo(:my_test_project)
     repo.add_successful_commit
-    commit = repo.short_head
     Project.gen(:my_test_project, :uri => repo.uri, :command => "exit 1")
 
     login_as "admin", "test"
     visit "/my-test-project"
     click_button "manual build"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
-
     build
     reload
-    repo.add_failing_commit
 
     assert_have_tag("h1", :content => "failed")
 
     click_link "my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
     fill_in "Build script", :with => "./test"
     click_button "Update Project"
     click_button "Rebuild"
 
-    assert_have_tag("#build h1", :content => "hasn't been built yet")
+    assert_have_tag("#build h1",
+      :content => "#{repo.short_head} hasn't been built yet")
+    assert_have_tag("#build span.who", :content => "John Doe")
+    assert_have_tag("#build blockquote p",
+      :content => "This commit will work")
 
+    sleep 2
     build
     reload
 
-    assert_have_tag("#build h1", :content => "Built #{commit} successfully")
+    assert_have_tag "#build h1",
+      :content => "Built #{repo.short_head} successfully"
 
     click_link "my-test-project"
     assert_have_tag("#last_build h1", :content => "success")
     assert_have_tag("#previous_builds li", :count => 2)
-    assert_have_tag("#previous_builds li[@class='failed']", :content => commit)
   end
 
   scenario "Building with DelayedBuilder" do
-    old_builder = Integrity.builder
+    old_builder = Integrity.config.builder
 
     begin
-      Integrity.builder = nil
       FileUtils.rm_f("dj.db")
 
       Integrity.configure { |c|
-        c.builder :dj, :adapter => "sqlite3", :database => "dj.db"
+        c.builder   = :dj, {:adapter => "sqlite3", :database => "dj.db"}
       }
 
       repo = git_repo(:my_test_project)
@@ -165,16 +174,17 @@ class ManualBuildTest < Test::Unit::AcceptanceTestCase
       visit "/my-test-project"
       click_button "manual build"
 
-      assert_have_tag("h1", :content => "hasn't been built yet")
+      assert_have_tag("h1", :content => "HEAD hasn't been built yet")
 
       Delayed::Job.work_off
       click_link "my-test-project"
 
       assert_have_tag("h1", :content => "Built #{repo.short_head} successfully")
-    rescue LoadError
+    rescue LoadError, NameError
       warn "Couldn't load DJ. Skipping test"
     ensure
-      Integrity.builder = old_builder
+      # TODO
+      Integrity.config.instance_variable_set(:@builder, old_builder)
     end
   end
 end

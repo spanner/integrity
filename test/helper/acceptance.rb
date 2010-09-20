@@ -18,9 +18,13 @@ module AcceptanceHelper
   include TestHelper
 
   def git_repo(name)
-    GitRepo.new(name.to_s).tap { |repo|
-      repo.create unless File.directory?(repo.uri)
-    }
+    repo = GitRepo.new(name.to_s)
+
+    unless File.directory?(repo.uri)
+      repo.create
+    end
+
+    repo
   end
 
   def login_as(user, password)
@@ -73,16 +77,24 @@ class Test::Unit::AcceptanceTestCase < IntegrityTest
     alias_method :scenario, :test
   end
 
+  class MockBuilder
+    def self.enqueue(build)
+      build.run!
+    end
+  end
+
   setup do
     Integrity::App.set(:environment, :test)
     Webrat.configure { |c| c.mode = :rack }
-    Integrity.builder = lambda { |build| Builder.new(build).build }
+    # TODO
+    Integrity.config.instance_variable_set(:@builder, MockBuilder)
     @app = Integrity.app
-    Integrity.directory.mkdir
-    log_out
-  end
 
-  teardown do
-    Integrity.directory.rmtree
+    if Integrity.config.directory.directory?
+      Integrity.config.directory.rmtree
+    end
+
+    Integrity.config.directory.mkdir
+    log_out
   end
 end

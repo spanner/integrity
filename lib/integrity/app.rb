@@ -1,16 +1,10 @@
 module Integrity
   class App < Sinatra::Base
     set     :root, File.expand_path("../../..", __FILE__)
-    enable  :methodoverride, :static, :sessions
+    enable  :methodoverride, :static
     disable :build_all
 
     helpers Integrity::Helpers
-
-    # TODO
-    def last_modified(time)
-      return unless time
-      super
-    end
 
     not_found do
       status 404
@@ -23,45 +17,32 @@ module Integrity
       show :error, :title => "something has gone terribly wrong"
     end
 
-    use Sass::Plugin::Rack
-
-    configure do |app|
-      Sass::Plugin.options[:css_location]      = app.public
-      Sass::Plugin.options[:template_location] = app.views
-    end
-
     before do
       halt 404 if request.path_info.include?("favico")
 
-      # The browser only sends http auth data for requests that are explicitly
-      # required to do so. This way we get the real values of +#logged_in?+ and
-      # +#current_user+
-      login_required if session[:user]
-
-      unless Integrity.base_url
-        Integrity.configure { |c| c.base_url url_for("/", :full) }
+      unless Integrity.config.base_url
+        Integrity.configure { |c| c.base_url = url_for("/", :full) }
       end
     end
 
-    post "/:endpoint/:token" do |endpoint, token|
-      pass unless endpoint_enabled?
-      halt 403 unless token   == endpoint_token
-      halt 400 unless payload =  endpoint_payload
+    post "/github/:token" do |token|
+      unless Integrity.config.github_enabled?
+        pass
+      end
 
-      BuildableProject.call(payload).each { |b| b.build }.size.to_s
+      unless token == Integrity.config.github_token
+        halt 403
+      end
+
+      Payload.build(
+        JSON.parse(params[:payload]),
+        Integrity.config.build_all?
+      ).to_s
     end
 
     get "/?" do
-      last_modified Build.max(:updated_at)
       @projects = authorized? ? Project.all : Project.all(:public => true)
       show :home, :title => "projects"
-    end
-
-    get "/login" do
-      login_required
-
-      session[:user] = current_user
-      redirect root_url.to_s
     end
 
     get "/new" do
@@ -86,7 +67,7 @@ module Integrity
 
     get "/:project" do
       login_required unless current_project.public?
-      last_modified current_project.builds.max(:updated_at)
+
       show :project, :title => ["projects", current_project.name]
     end
 
@@ -117,22 +98,28 @@ module Integrity
     post "/:project/builds" do
       login_required
 
-      @build = current_project.build("HEAD")
+      @build = current_project.build_head
       redirect build_url(@build).to_s
     end
 
     get "/:project/builds/:build" do
       login_required unless current_project.public?
-      last_modified current_build.updated_at
 
       show :build, :title => ["projects", current_project.permalink,
-        current_build.commit.identifier]
+        current_build.sha1_short]
+    end
+
+    get "/:project/builds/:build/raw" do
+      login_required unless current_project.public?
+
+      content_type :text
+      current_build.output
     end
 
     post "/:project/builds/:build" do
       login_required
 
-      @build = current_project.build(current_build.commit.identifier)
+      @build = current_project.build(current_build.commit)
       redirect build_url(@build).to_s
     end
 

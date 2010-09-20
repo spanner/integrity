@@ -12,7 +12,7 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
 
     login_as "admin", "test"
     visit "/integrity"
-    click_link "Edit Project"
+    click_link "Edit"
     click_button "Yes, I'm sure, nuke it"
     visit "/"
 
@@ -28,7 +28,7 @@ class DeleteTest < Test::Unit::AcceptanceTestCase
     login_as "admin", "test"
     visit "/integrity"
     click_link "Build foo"
-    click_button "Delete build"
+    click_button "Delete this build"
 
     assert_not_contain("Previous builds")
   end

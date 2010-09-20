@@ -19,13 +19,14 @@ class IntegrityTest < Test::Unit::TestCase
 
   def setup
     Integrity.configure { |c|
-      c.database  "sqlite3:test.db"
-      c.directory File.expand_path(File.dirname(__FILE__) + "/../tmp")
-      c.base_url "http://www.example.com"
-      c.log  "test.log"
-      c.user "admin"
-      c.pass "test"
+      c.database  = "sqlite3:test.db"
+      c.directory = File.expand_path(File.dirname(__FILE__) + "/../tmp")
+      c.base_url  = "http://www.example.com"
+      c.log       = "test.log"
+      c.username  = "admin"
+      c.password  = "test"
     }
+    Integrity::App.disable(:build_all)
     Thread.abort_on_exception = true
     DataMapper.auto_migrate!
   end
@@ -36,8 +37,9 @@ class IntegrityTest < Test::Unit::TestCase
 
   def assert_change(object, method, difference=1)
     initial_value = object.send(method)
-    yield
+    ret = yield
     assert_equal initial_value + difference, object.send(method)
+    ret
   end
 
   def assert_no_change(object, method, &block)

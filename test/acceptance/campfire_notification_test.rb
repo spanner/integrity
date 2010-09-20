@@ -33,7 +33,7 @@ class CampfireNotificationTest < Test::Unit::AcceptanceTestCase
   def build
     login_as "admin", "test"
     visit "/my-test-project"
-    click_link "Edit Project"
+    click_link "Edit"
 
     check "enabled_notifiers_campfire"
     fill_in "Subdomain", :with => @account
@@ -81,7 +81,6 @@ Commit Date: #{DateTime.parse(build_commit["timestamp"])}
 Commit Author: #{build_commit["author"]["name"]}
 
 Running tests...
-
 EOM
 
     paste_payload = {

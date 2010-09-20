@@ -9,17 +9,14 @@ module Integrity
       end
 
       def bash_color_codes(string)
-        string.gsub("\e[0m", '</span>').
-          gsub("\e[31m", '<span class="color31">').
-          gsub("\e[32m", '<span class="color32">').
-          gsub("\e[33m", '<span class="color33">').
-          gsub("\e[34m", '<span class="color34">').
-          gsub("\e[35m", '<span class="color35">').
-          gsub("\e[36m", '<span class="color36">').
-          gsub("\e[37m", '<span class="color37">')
+        Bcat::ANSI.new(string).to_html
       end
 
       def pretty_date(date_time)
+        unless date_time
+          return "commit date not loaded"
+        end
+
         days_away = (Date.today - Date.new(date_time.year, date_time.month, date_time.day)).to_i
         if days_away == 0
           "today"

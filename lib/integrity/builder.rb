@@ -1,65 +1,64 @@
 module Integrity
   class Builder
-    def self.build(b)
-      new(b).build
+    def self.build(_build, directory, logger)
+      new(_build, directory, logger).build
     end
 
-    def initialize(build)
-      @build  = build
-      @status = false
-      @output = ""
+    def initialize(build, directory, logger)
+      @build     = build
+      @directory = directory
+      @logger    = logger
     end
 
     def build
       start
       run
       complete
+      notify
     end
 
     def start
-      Integrity.log "Started building #{@build.project.uri} at #{commit}"
-
-      repo.checkout
-
-      metadata = repo.metadata
-
-      @build.update(
-        :started_at => Time.now,
-        :commit     => {
-          :identifier   => metadata["id"],
-          :message      => metadata["message"],
-          :author       => metadata["author"],
-          :committed_at => metadata["timestamp"]
-        }
-      )
-    end
-
-    def complete
-      Integrity.log "Build #{commit} exited with #{@status} got:\n #{@output}"
-
-      @build.update!(
-        :completed_at => Time.now,
-        :successful   => @status,
-        :output       => @output
-      )
-
-      @build.project.enabled_notifiers.each { |n| n.notify_of_build(@build) }
+      @logger.info "Started building #{repo.uri} at #{commit}"
+      checkout.run
+      @build.update(:started_at => Time.now, :commit => checkout.metadata)
     end
 
     def run
-      cmd = "(cd #{repo.directory} && #{@build.project.command} 2>&1)"
-      IO.popen(cmd, "r") { |io| @output = io.read }
-      @status = $?.success?
+      @result = checkout.run_in_dir(command)
     end
 
-    def repo
-      @repo ||= Repository.new(
-        @build.id, @build.project.uri, @build.project.branch, commit
+    def complete
+      @logger.info "Build #{commit} exited with #{@result.success} got:\n #{@result.output}"
+
+      @build.update(
+        :completed_at => Time.now,
+        :successful   => @result.success,
+        :output       => @result.output
       )
     end
 
+    def notify
+      @build.notify
+    end
+
+    def checkout
+      @checkout ||= Checkout.new(repo, commit, directory, @logger)
+    end
+
+    def directory
+      @_directory ||= @directory.join(@build.id.to_s)
+    end
+
+    def repo
+      @build.repo
+    end
+
+    def command
+      @build.command
+    end
+
     def commit
-      @build.commit.identifier
+      @build.sha1
     end
   end
 end

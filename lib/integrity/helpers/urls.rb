@@ -1,6 +1,34 @@
 module Integrity
   module Helpers
     module Urls
+      def github_project_url(project, branch=true)
+        parts = project.uri.path.split("/").reject { |x| x.empty? }
+        user  = parts.first
+        repo  = parts.last.chomp(".git")
+
+        if ! branch || project.branch == "master"
+          "http://github.com/#{user}/#{repo}"
+        else
+          "http://github.com/#{user}/#{repo}/compare/" \
+            "master...#{project.branch}"
+        end
+      end
+
+      def github_project_link(project)
+        url = github_project_url(project)
+
+        if url.include?("/compare/master")
+          "Compare on GitHub"
+        else
+          "Browse on GitHub"
+        end
+      end
+
+      def github_commit_url(build)
+        github_project_url(build.project, false).to_s +
+          "/commit/#{build.sha1}"
+      end
+
       def root_url
         @root_url ||= Addressable::URI.parse(url_for("/", :full))
       end

@@ -1,11 +1,11 @@
 module Integrity
   class Notifier
     class Base
-      def self.notify_of_build(build, config)
-        Integrity.log "Notifying of build #{build.commit.short_identifier} with #{to_s}"
+      def self.notify(build, config)
+        Integrity.logger.info "Notifying of build #{build.sha1_short} with #{to_s}"
         Timeout.timeout(8) { new(build, config).deliver! }
       rescue Timeout::Error
-        Integrity.log "#{to_s} notifier timed out"
+        Integrity.logger.error "#{to_s} notifier timed out"
         false
       end
 
@@ -25,36 +25,34 @@ module Integrity
       end
 
       def short_message
-        build.human_status
+        @build.human_status
       end
 
       def full_message
         <<-EOM
 == #{short_message}
 
-Commit Message: #{build.commit.message}
-Commit Date: #{build.commit.committed_at}
-Commit Author: #{build.commit.author.name}
+Commit Message: #{@build.message}
+Commit Date: #{@build.committed_at}
+Commit Author: #{@build.author}
 
 Link: #{build_url}
 
 == Build Output:
 
-#{escape(build.output)}
+#{build_output}
 EOM
       end
 
       def build_url
-        base_url = Integrity.base_url ||
+        base_url = Integrity.config.base_url ||
           Addressable::URI.parse("http://example.org")
-        base_url.join("/#{build.project.permalink}/builds/#{build.id}")
+        base_url.join("/#{@build.project.permalink}/builds/#{@build.id}")
       end
 
-      private
-
-        def escape(s)
-          s.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
-        end
+      def build_output
+        @build.output.gsub("\e[0m", "").gsub(/\e\[3[1-7]m/, "")
+      end
     end
   end
 end

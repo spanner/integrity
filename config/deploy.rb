@@ -1,3 +1,4 @@
+require 'bundler/capistrano'
 set :application, "integrity"
 set :scm, :git
 set :repository, "git@github.com:spanner/#{application}.git"
@@ -21,8 +22,6 @@ after "deploy:setup" do
   sudo "chown -R #{user}:#{group} #{deploy_to}"
 end
 
-after 'deploy:update_code', 'bundler:install'
-
 after "deploy:update" do
   run "ln -s #{shared_path}/shared #{current_release}/shared" 
   run "ln -s #{shared_path}/builds #{current_release}/builds" 
@@ -40,18 +39,6 @@ namespace :deploy do
   desc "remove entirely the remote repository cache"
   task :clear_cached_copy do
     run "rm -rf #{shared_path}/cached-copy"
-  end
-end
-
-namespace :bundler do
-  desc "Install the bundler gem"
-  task :install_gem do
-    sudo("gem install bundler --source=http://gemcutter.org")
-  end
-
-  desc "Install and lock the bundle"
-  task :install do
-    run("cd #{current_release} && bundle install && bundle lock")
   end
 end
 

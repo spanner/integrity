@@ -6,7 +6,7 @@ module Integrity
     include Notifiers
 
     property :id,         Serial
-    property :name,       String,   :required => true
+    property :name,       String,   :required => true, :unique => true
     property :permalink,  String
     property :uri,        URI,      :required => true, :length => 255
     property :branch,     String,   :required => true, :default => "master"
@@ -14,8 +14,6 @@ module Integrity
     property :public,     Boolean,  :default  => true
 
     timestamps :at
-
-    validates_is_unique :name
 
     default_scope(:default).update(:order => [:name.asc])
 
@@ -28,8 +26,47 @@ module Integrity
       builds.destroy!
     end
 
+    def repo
+      @repo ||= Repository.new(uri, branch)
+    end
+
+    def build_head
+      build(Commit.new(:identifier => "HEAD"))
+    end
+
     def build(commit)
-      BuildableProject.new(self, commit).build
+      _build = builds.create(:commit => {
+        :identifier   => commit.identifier,
+        :author       => commit.author,
+        :message      => commit.message,
+        :committed_at => commit.committed_at
+      })
+      _build.run
+      _build
+    end
+
+    def fork(new_branch)
+      forked = Project.create(
+        :name    => "#{name} (#{new_branch})",
+        :uri     => uri,
+        :branch  => new_branch,
+        :command => command,
+        :public  => public?
+      )
+
+      notifiers.each { |notifier|
+        forked.notifiers.create(
+          :name    => notifier.name,
+          :enabled => notifier.enabled?,
+          :config  => notifier.config
+        )
+      }
+
+      forked
+    end
+
+    def github?
+      uri.to_s.include?("github.com")
     end
 
     # TODO lame, there is got to be a better way
@@ -51,11 +88,6 @@ module Integrity
 
     def human_status
       ! blank? && last_build.human_status
-    end
-
-    def public=(v)
-      return attribute_set(:public, v == "1") if %w[0 1].include?(v)
-      attribute_set(:public, !!v)
     end
 
     private

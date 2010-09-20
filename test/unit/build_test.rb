@@ -1,12 +1,12 @@
 require "helper"
 
 class BuildTest < IntegrityTest
-  it "has an output" do
+  test "output" do
     assert ! Build.gen.output.empty?
     assert_equal "", Build.new.output
   end
 
-  it "knows it's status" do
+  test "status" do
     assert Build.gen(:successful).successful?
     assert ! Build.gen(:failed).successful?
 
@@ -16,7 +16,7 @@ class BuildTest < IntegrityTest
     assert_equal :building, Build.gen(:building).status
   end
 
-  it "has a human readable status" do
+  test "human status" do
     assert_match /^Built (.*?) successfully$/,
       Build.gen(:successful).human_status
 
@@ -26,11 +26,29 @@ class BuildTest < IntegrityTest
     assert_match /^(.*?) is building$/,
       Build.gen(:building).human_status
 
+    build = Build.gen(:pending)
+    assert_equal "#{build.sha1_short} hasn't been built yet",
+      build.human_status
+
     assert_equal "This commit hasn't been built yet",
-      Build.gen(:pending).human_status
+      Build.gen(:pending, :commit => {:identifier => nil}).human_status
   end
 
-  test "being destroyed" do
+  test "commit data" do
+    build = Build.gen(:commit => Commit.gen(
+      :identifier   => "6f2ec35bc09744f55e528fe98a438dcb704edc65",
+      :message      => "init",
+      :author       => "Simon Rozet <simon@rozet.name>",
+      :committed_at => Time.utc(2008, 10, 12, 14, 18, 20)
+    ))
+
+    assert_equal "init",        build.message
+    assert_equal "Simon Rozet", build.author
+    assert_kind_of DateTime,    build.committed_at
+    assert build.sha1.include?(build.sha1_short)
+  end
+
+  test "destroy" do
     build = Build.gen
     assert_change(Commit, :count, -1) { build.destroy }
   end

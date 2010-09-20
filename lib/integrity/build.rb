@@ -2,6 +2,13 @@ module Integrity
   class Build
     include DataMapper::Resource
 
+    HUMAN_STATUS = {
+      :success  => "Built %s successfully",
+      :failed   => "Built %s and failed",
+      :pending  => "%s hasn't been built yet",
+      :building => "%s is building"
+    }
+
     property :id,           Serial
     property :project_id,   Integer   # TODO :nullable => false
     property :output,       Text,     :default => "", :length => 1048576
@@ -16,6 +23,18 @@ module Integrity
 
     before :destroy do
       commit.destroy!
+    end
+
+    def run
+      Integrity.config.builder.enqueue(self)
+    end
+
+    def run!
+      Builder.build(self, Integrity.config.directory, Integrity.logger)
+    end
+
+    def notify
+      project.enabled_notifiers.each { |n| n.notify(self) }
     end
 
     def successful?
@@ -35,7 +54,39 @@ module Integrity
     end
 
     def completed?
-      !pending? && !building?
+      ! pending? && ! building?
+    end
+
+    def repo
+      project.repo
+    end
+
+    def command
+      project.command
+    end
+
+    def sha1
+      commit.identifier
+    end
+
+    def sha1_short
+      unless sha1
+        return "This commit"
+      end
+
+      sha1[0..6]
+    end
+
+    def message
+      commit.message || "message not loaded"
+    end
+
+    def author
+      (commit.author || Author.unknown).name
+    end
+
+    def committed_at
+      commit.committed_at
     end
 
     def status
@@ -48,12 +99,7 @@ module Integrity
     end
 
     def human_status
-      case status
-      when :success  then "Built #{commit.short_identifier} successfully"
-      when :failed   then "Built #{commit.short_identifier} and failed"
-      when :pending  then "This commit hasn't been built yet"
-      when :building then "#{commit.short_identifier} is building"
-      end
+      HUMAN_STATUS[status] % sha1_short
     end
   end
 end

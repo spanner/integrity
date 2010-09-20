@@ -34,6 +34,8 @@ gem "sinatra-ditties"
 # gem "bunny"
 
 # = Dependencies for the :dj builder
+gem "activerecord"
+gem "sqlite3-ruby"
 gem "delayed_job"
 
 # Uncomment if you're using pg or mysql instead of sqlite

@@ -34,10 +34,7 @@ gem "sinatra-ditties"
 # gem "bunny"
 
 # = Dependencies for the :dj builder
-gem "activerecord"
-gem "sqlite3-ruby"
-gem "daemons"
-gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+gem "delayed_job"
 
 # Uncomment if you're using pg or mysql instead of sqlite
 # gem "pg"
@@ -46,9 +43,7 @@ gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
 # = Development dependencies.
 group :test do
   gem "ruby-debug" if RUBY_VERSION < '1.9'
-  gem "sqlite3-ruby"
-  gem "activerecord"
-  gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+  gem "delayed_job"
   gem "rr"
   gem "mocha"
   gem "redgreen"

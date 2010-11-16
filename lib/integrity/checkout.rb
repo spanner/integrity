@@ -53,8 +53,9 @@ module Integrity
       runner.cd(@directory, &block)
     end
     
+    # trying to defeat the efforts of both bundler and passenger to keep us in a box
     def with_env(&block)
-      env = "RUBYOPT = #{original_rubyopt} PATH=#{original_path}"
+      env = "GEM_HOME=#{BUILD_GEM_HOME} PATH=#{BUILD_PATH}"
       @logger.debug("restoring env: #{env}")
       runner.setenv(env, &block)
     end
@@ -63,15 +64,5 @@ module Integrity
       @runner ||= CommandRunner.new(@logger)
     end
     
-  private
-
-    def original_path
-      ENV['PATH'] && ENV["PATH"].split(":").reject { |path| path.include?("vendor") }.join(":")
-    end
-  
-    def original_rubyopt
-      ENV['RUBYOPT'] && ENV["RUBYOPT"].split.reject { |opt| opt.include?("vendor") }.join(" ")
-    end
-
   end
 end

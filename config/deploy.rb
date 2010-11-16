@@ -1,3 +1,4 @@
+require 'bundler/capistrano'
 set :application, "integrity"
 set :scm, :git
 set :repository, "git@github.com:spanner/#{application}.git"

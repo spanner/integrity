@@ -39,10 +39,23 @@ module Integrity
 
     def normalize(cmd)
       if @dir
-        "(cd #{@dir} && #{cmd} 2>&1)"
+        "(cd #{@dir} && #{restore_env} #{cmd} 2>&1)"
       else
-        "(#{cmd} 2>&1)"
+        "(#{restore_env} #{cmd} 2>&1)"
       end
     end
+
+    def restore_env
+      "RUBYOPT=#{original_rubyopt} PATH=#{original_path}"
+    end
+    
+    def original_path
+      ENV['PATH'] && ENV["PATH"].split(":").reject { |path| path.include?("vendor") }.join(":")
+    end
+    
+    def original_rubyopt
+      ENV['RUBYOPT'] && ENV["RUBYOPT"].split.reject { |opt| opt.include?("vendor") }.join(" ")
+    end
+    
   end
 end

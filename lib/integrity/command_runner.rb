@@ -15,11 +15,6 @@ module Integrity
       @dir = nil
     end
     
-    def setenv(env)
-      @env = env
-      yield self
-    end
-
     def run(command)
       cmd = normalize(command)
 
@@ -43,8 +38,9 @@ module Integrity
     end
 
     def normalize(cmd)
-      cmd = "#{@env} && #{cmd}" if @env
       cmd = "cd #{@dir} && #{cmd}" if @dir
+      cmd = "#{BUILD_ENV} && #{cmd}" if BUILD_ENV
+      cmd = %{su -c "#{cmd}" - #{BUILD_USER}} if BUILD_USER
       "(#{cmd} 2>&1)"
     end
 

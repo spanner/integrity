@@ -28,6 +28,7 @@ after "deploy:update" do
   run "ln -s #{shared_path}/builds #{current_release}/builds" 
   run "ln -s #{shared_path}/data/integrity.db #{current_release}/integrity.db" 
   run "ln -s #{shared_path}/init.rb #{current_release}/init.rb" 
+  run "ln -s #{shared_path}/commands #{current_release}/commands" 
 end
 
 namespace :bundle do

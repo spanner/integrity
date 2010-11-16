@@ -51,13 +51,6 @@ module Integrity
       runner.cd(@directory, &block)
     end
     
-    # trying to defeat the efforts of both bundler and passenger to keep us in a box
-    def with_env(&block)
-      env = "GEM_PATH=#{BUILD_GEM_PATH} && PATH=#{BUILD_PATH}"
-      @logger.debug("restoring env: #{env}")
-      runner.setenv(env, &block)
-    end
-
     def runner
       @runner ||= CommandRunner.new(@logger)
     end

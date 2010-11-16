@@ -14,6 +14,11 @@ module Integrity
     ensure
       @dir = nil
     end
+    
+    def setenv(env)
+      @env = env
+      yield self
+    end
 
     def run(command)
       cmd = normalize(command)
@@ -38,11 +43,10 @@ module Integrity
     end
 
     def normalize(cmd)
-      if @dir
-        "(cd #{@dir} && #{cmd} 2>&1)"
-      else
-        "(#{cmd} 2>&1)"
-      end
+      cmd = "#{@env} #{cmd}" if @env
+      cmd = "cd #{@dir} && #{cmd}" if @dir
+      "(#{cmd} 2>&1)"
     end
-  end
+
+  end  
 end

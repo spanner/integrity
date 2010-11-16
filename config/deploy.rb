@@ -1,4 +1,3 @@
-require 'bundler/capistrano'
 set :application, "integrity"
 set :scm, :git
 set :repository, "git@github.com:spanner/#{application}.git"
@@ -16,6 +15,8 @@ set :deploy_to, "/var/www/#{application}"
 set :deploy_via, :remote_cache
 default_run_options[:pty] = true
 
+after "deploy:update_code", "bundle:install"
+
 after "deploy:setup" do
   sudo "mkdir -p #{deploy_to}/logs" 
   sudo "mkdir -p #{shared_path}/shared" 
@@ -27,6 +28,12 @@ after "deploy:update" do
   run "ln -s #{shared_path}/builds #{current_release}/builds" 
   run "ln -s #{shared_path}/data/integrity.db #{current_release}/integrity.db" 
   run "ln -s #{shared_path}/init.rb #{current_release}/init.rb" 
+end
+
+namespace :bundle do
+  task :install, :roles => :app do
+    sudo "bundle install --gemfile #{current_release}/Gemfile --quiet --without development test"
+  end
 end
 
 namespace :deploy do

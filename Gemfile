@@ -34,7 +34,7 @@ gem "sinatra-ditties"
 # gem "bunny"
 
 # = Dependencies for the :dj builder
-gem "activerecord", "~>2.3"
+gem "activerecord", "2.3.8"
 gem "sqlite3-ruby"
 gem "delayed_job"
 
@@ -42,7 +42,6 @@ gem "delayed_job"
 # gem "pg"
 # gem "mysql"
 
-# = Development dependencies.
 group :test do
   gem "ruby-debug" if RUBY_VERSION < '1.9'
   gem "delayed_job"

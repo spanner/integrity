@@ -43,7 +43,7 @@ module Integrity
     end
 
     def normalize(cmd)
-      cmd = "#{@env} #{cmd}" if @env
+      cmd = "#{@env} && #{cmd}" if @env
       cmd = "cd #{@dir} && #{cmd}" if @dir
       "(#{cmd} 2>&1)"
     end

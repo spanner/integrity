@@ -36,9 +36,7 @@ module Integrity
     end
 
     def run_with_env(command)
-      with_env {
-        run_in_dir(command)
-      }
+      with_env { run_in_dir(command) }
     end
 
     def run_in_dir(command)

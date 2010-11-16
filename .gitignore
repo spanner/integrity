@@ -4,4 +4,4 @@ builds
 *.db
 *.log
 .bundle
-
+config/nginx.conf

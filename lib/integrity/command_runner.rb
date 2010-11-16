@@ -39,9 +39,9 @@ module Integrity
 
     def normalize(cmd)
       if @dir
-        "(cd #{@dir} && #{restore_env} && #{cmd} 2>&1)"
+        "(cd #{@dir} && #{restore_env} #{cmd} 2>&1)"
       else
-        "(#{restore_env} && #{cmd} 2>&1)"
+        "(#{restore_env} #{cmd} 2>&1)"
       end
     end
 

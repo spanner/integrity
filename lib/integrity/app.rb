@@ -115,6 +115,7 @@ module Integrity
       content_type :text
       current_build.output
     end
+    
 
     post "/:project/builds/:build" do
       login_required

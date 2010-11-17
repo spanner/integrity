@@ -11,7 +11,11 @@ module Integrity
 
     # Adds a job to the queue.
     def enqueue(build)
-      @pool << proc { build.run! }
+      STDERR.puts("enqueue #{build.inspect}")
+      @pool << proc { 
+        STDERR.puts("jobproc!")
+        build.run! 
+      }
     end
 
     # The number of jobs currently in the queue.
@@ -95,6 +99,8 @@ module Integrity
       # Adds a job to the queue, the job can be any number of objects
       # responding to call, and/or a block.
       def add(*jobs, &blk)
+        STDERR.puts("pooling #{jobs.inspect}")
+
         jobs = jobs + Array(blk)
 
         jobs.each { |job|
@@ -117,6 +123,8 @@ module Integrity
       # Create a new thread and return it. The thread will run until the
       # thread-local value +:run+ is changed to false or nil.
       def spawn
+        STDERR.puts("spawning")
+        
         Thread.new {
           c = Thread.current
           c[:run] = true
@@ -124,6 +132,8 @@ module Integrity
           while c[:run]
             job = @jobs.pop
             begin
+              STDERR.puts("calling #{job}")
+              
               job.call
             rescue Exception => e
               @logger.error("Exception occured during build: #{e.message}")

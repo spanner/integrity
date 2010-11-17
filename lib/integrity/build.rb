@@ -26,6 +26,7 @@ module Integrity
     end
 
     def run
+      STDERR.puts("build.run: #{Integrity.config.builder.inspect}")
       Integrity.config.builder.enqueue(self)
     end
 

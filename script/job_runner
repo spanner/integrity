@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'daemons'
+require "init"
+require "integrity/delayed_builder"
+
 dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
 daemon_options = {

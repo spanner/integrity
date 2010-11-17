@@ -5,3 +5,8 @@ builds
 *.log
 .bundle
 config/nginx.conf
+tmp/*
+logs/*
+shared/*
+data/*
+init.rb

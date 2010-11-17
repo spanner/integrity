@@ -33,7 +33,8 @@ end
 
 namespace :bundle do
   task :install, :roles => :app do
-    sudo "cd #{release_path} && bundle install --without development test"
+    run "cd #{release_path}"
+    sudo "bundle install --without development test"
     # sudo "bundle install --without development test"
   end
 end

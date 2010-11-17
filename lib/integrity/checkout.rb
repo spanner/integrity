@@ -35,10 +35,6 @@ module Integrity
         output.split.first
     end
 
-    def run_with_env(command)
-      with_env { run_in_dir(command) }
-    end
-
     def run_in_dir(command)
       in_dir { |r| r.run(command) }
     end

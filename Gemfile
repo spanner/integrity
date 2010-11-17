@@ -10,8 +10,10 @@ gem "dm-validations", "1.0.0"
 gem "bcrypt-ruby", "2.1.2"
 gem "uuidtools", "2.1.1"
 gem "extlib", "0.9.15"
+
 gem "data_objects", "0.10.2"
-gem "do_sqlite3", "0.10.2"
+gem "do_mysql", "0.10.2"
+
 gem "rake"
 gem "haml", "~>3.0"
 gem "thor", "0.9.9"
@@ -21,6 +23,7 @@ gem "sinatra", "1.0.0"
 gem "sinatra-authorization", "1.0.0"
 gem "bcat", "~>0.5"
 gem "rack", "1.1.0"
+
 gem "mysql"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.

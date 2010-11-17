@@ -14,10 +14,12 @@ module Integrity
     ensure
       @dir = nil
     end
-    
+
     def run(command)
       cmd = normalize(command)
+
       @logger.debug(cmd)
+
       output = ""
       IO.popen(cmd, "r") { |io| output = io.read }
 
@@ -36,10 +38,11 @@ module Integrity
     end
 
     def normalize(cmd)
-      cmd = "cd #{@dir} && #{cmd}" if @dir
-      cmd = "#{BUILD_ENV} && #{cmd}" if BUILD_ENV
-      "(#{cmd} 2>&1)"
+      if @dir
+        "(cd #{@dir} && #{cmd} 2>&1)"
+      else
+        "(#{cmd} 2>&1)"
+      end
     end
-
-  end  
+  end
 end

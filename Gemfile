@@ -25,6 +25,7 @@ gem "rack", "1.1.0"
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
 gem "sinatra-ditties"
+
 # = IRC
 # gem "shout-bot"
 # = Campfire

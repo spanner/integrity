@@ -301,7 +301,7 @@ specs:
     version: 1.3.5
 - webrat: 
     version: 0.6.0
-hash: 48d1ac1e53fd60882e725f9e9eaa4dac51d5c424
+hash: 5c79fc64054ae7f34c7dadab6a6a990cab297ec5
 sources: 
 - Git: 
     uri: git://github.com/qrush/nap.git

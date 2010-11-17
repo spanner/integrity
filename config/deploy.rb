@@ -33,7 +33,8 @@ end
 
 namespace :bundle do
   task :install, :roles => :app do
-    sudo "bundle install --gemfile #{current_release}/Gemfile --quiet --without development test"
+    sudo "cd #{release_path} && bundle install --without development test"
+    # sudo "bundle install --without development test"
   end
 end
 

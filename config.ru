@@ -1,7 +1,8 @@
-require 'rubygems'
-require 'bundler/setup'
+require "rubygems"
+require "bundler"
+Bundler.setup
+
 require "init"
-
-BUILD_ENV = "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin GEM_PATH=/usr/lib/ruby/gems/1.8"
-
 run Integrity.app
+
+

@@ -21,6 +21,7 @@ gem "sinatra", "1.0.0"
 gem "sinatra-authorization", "1.0.0"
 gem "bcat", "~>0.5"
 gem "rack", "1.1.0"
+gem "mysql"
 
 # These are dependencies for the various notifiers. Uncomment as appropriate.
 # = Email
@@ -38,10 +39,6 @@ gem "sinatra-ditties"
 gem "activerecord", "2.3.8"
 gem "sqlite3-ruby"
 gem "delayed_job"
-
-# Uncomment if you're using pg or mysql instead of sqlite
-# gem "pg"
-# gem "mysql"
 
 group :test do
   gem "ruby-debug" if RUBY_VERSION < '1.9'

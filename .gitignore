@@ -10,3 +10,4 @@ logs/*
 shared/*
 data/*
 init.rb
+public/metrics/*

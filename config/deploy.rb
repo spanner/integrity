@@ -25,16 +25,15 @@ end
 
 after "deploy:update" do
   run "ln -s #{shared_path}/shared #{current_release}/shared" 
-  run "ln -s #{shared_path}/builds #{current_release}/builds" 
-  run "ln -s #{shared_path}/data/integrity.db #{current_release}/integrity.db" 
-  run "ln -s #{shared_path}/init.rb #{current_release}/init.rb" 
-  run "ln -s #{shared_path}/commands #{current_release}/commands" 
+  run "ln -s #{shared_path}/builds #{current_release}/builds"
+  run "ln -s #{shared_path}/data/integrity.db #{current_release}/integrity.db"
+  run "ln -s #{shared_path}/init.rb #{current_release}/init.rb"
+  run "ln -s #{shared_path}/metrics #{current_release}/public/metrics"
 end
 
 namespace :bundle do
   task :install, :roles => :app do
     run "cd #{current_release} && bundle install --without test && bundle lock"
-    # sudo "bundle install --without development test"
   end
 end
 

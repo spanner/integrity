@@ -314,8 +314,7 @@ specs:
 - metric_fu: 
     version: 2.0.1
 - integrity_metrics: 
-    version: 0.1.1
-    source: 2
+    version: 0.1.2
 - linecache: 
     version: "0.43"
 - mime-types: 
@@ -360,7 +359,7 @@ specs:
     version: 1.6.1
 - webrat: 
     version: 0.6.0
-hash: 79c3f346d09cee40f067507d27eb1e46481ec174
+hash: 2e38b5f579f5767d1cf52abbd58faffe68b729c3
 sources: 
 - Git: 
     uri: git://github.com/qrush/nap.git
@@ -370,8 +369,5 @@ sources:
     uri: git://github.com/Manfred/broach.git
     git: git://github.com/Manfred/broach.git
     ref: 4e757432bf2ca1203c982c94b18fcbaa5f13394e
-- Path: 
-    path: !ruby/object:Pathname 
-      path: /var/www/scratch/integrity_metrics
 - Rubygems: 
     uri: http://rubygems.org

@@ -35,7 +35,7 @@ gem "delayed_job", "2.0.4"
 gem "sinatra-ditties"
 
 # = metrics
-gem "integrity_metrics", :path => "/var/www/scratch/integrity_metrics"
+gem "integrity_metrics"
 
 # = IRC
 # gem "shout-bot"
